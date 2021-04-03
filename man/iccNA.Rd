@@ -4,7 +4,7 @@
 \alias{iccNA}
 \title{Intraclass correlation coefficients (ICCs) -- generalized for randomly incomplete datasets}
 \usage{
-iccNA(ratings, rho0 = 0, conf = 0.95, Cs = 10000, detail = FALSE)
+iccNA(ratings, rho0 = 0, conf = 0.95, detail = FALSE, oneG = TRUE, Cs = 10000)
 }
 \arguments{
 \item{ratings}{n*m matrix or data frame; n objects (rows), m raters (columns)}
@@ -12,14 +12,20 @@ iccNA(ratings, rho0 = 0, conf = 0.95, Cs = 10000, detail = FALSE)
 \item{rho0}{numeric value; correlation in population (\eqn{\rho}) according to the null 
 hypothesis (0 is default)}
 
-\item{conf}{numeric value; confidence level (95\% is default)}
-
-\item{Cs}{numeric value; denominator (10000 is default) of the effect-size-criterion to stop 
-iteration of the correction for the raters' biases; the enumerator denotes a small effect 
+\item{conf}{numeric value; confidence level (95\% is default)
 (\eqn{\eta}-squared = 1\%)}
 
 \item{detail}{logical; if TRUE, returns additional information (sums of squares, degrees of 
 freedom, the means per object, data corrected for the raters' biases)}
+
+\item{oneG}{logical; if TRUE, the ipsation (correction for the raters' effects) is done the 
+simple way, using the difference of each raters mean to the one grand mean (\eqn{G}) of all 
+values to estimate the raters' biases. If FALSE the weighted sub-means (\eqn{G_j} of those
+objects that an individual rater \eqn{j} rated are used instead (see Equation 4.30 in 
+Brueckl, 2011).}
+
+\item{Cs}{numeric value; denominator (10000 is default) of the effect-size-criterion to stop 
+iteration of the correction for the raters' biases; the enumerator denotes a small effect}
 }
 \value{
 \item{ICCs}{data frame containing the intraclass correlation coefficients, the corresponding 
@@ -49,11 +55,20 @@ Thus, both an imputation of missing values (\emph{NA}s) and row-wise or column-w
 data are obsolete. Working on complete datasets, it yields the same results as the common 
 functions, e.g. \link[irrNA]{icc_corr}.\cr
 The method of Ebel (1951) is used to calculate the oneway ICCs. The solution for the twoway 
-ICCs is derived from the oneway solution (cp. Brueckl, 2011, p. 96 ff.): The raters' 
-individual effects (biases) are determined, reducing this problem again to the oneway problem 
-(cp. Greer & Dunlap, 1997). If the ratings are unbalanced, which happens most of the time if 
-not all raters rated all objects, the raters' biases cannot be determined exactly -- but as 
-approximately as desired. This approximation needs an iteration, thus a stop criterion (\code{Cs}): 
+ICCs is derived from the oneway solution (cp. Brueckl, 2011, p. 96 ff.): The raters' individual 
+effects (biases) are estimated, reducing this problem again to the oneway problem (cp. Greer & 
+Dunlap, 1997).\cr
+This estimation can be done using the difference of a certain (\eqn{j}) raters' mean to the 
+grand mean (\eqn{G}) or to the sub-mean (\eqn{G_j}) representing only those objects 
+that were rated by this rater. The first method is fail-safe. The second method is thought to 
+provide the more precise estimates (of the raters' biases), the more the mean of the true values 
+of the objects that each rater rated differ from the grand mean, e.g. if there are raters that 
+only rate objects with low true values (and therefore also other raters that only rate objects 
+with high true values).\cr
+If the second method is chosen and if the ratings are unbalanced, which happens most of the time 
+if not all raters rated all objects, the raters' biases cannot be determined exactly -- but as 
+approximately as desired. This approximation needs an iteration, thus a stop criterion 
+(\code{Cs}): 
 The iteration is stopped, when the difference in the raters' effect size (\eqn{\eta}-squared) 
 between subsequent iterations would be equal to or smaller than the \code{Cs}th part of a small 
 effect (i.e. \eqn{\eta}-squared = 1\%).\cr

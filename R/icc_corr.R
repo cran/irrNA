@@ -2,7 +2,7 @@
 #' of icc\{irr\}
 #' @description Computes single score or average score ICCs as an index of interrater reliability of 
 #' quantitative data. Additionally, F-test and confidence interval are computed. icc_corr\{irrNA\}
-#' corrects 3 errors of Matthias Gamer's function \link[irr]{icc} (version 0.84).
+#' corrects 3 errors of Matthias Gamer's function \link[irr]{icc} (version 0.84.1).
 #' 
 #' @param ratings n*m matrix or dataframe, n subjects m raters.
 #' @param model	a character string specifying if a "oneway" model (default) with row effects random, 
@@ -13,8 +13,8 @@
 #' You can specify just the initial letter.
 #' @param unit a character string specifying the unit of analysis: Must be one of "single" (default) 
 #' or "average". You can specify just the initial letter.
-#' @param r0 specification of the null hypothesis r \eqn{\le} r0. Note that a one sided test (H1: r > r0) is 
-#' performed.
+#' @param r0 specification of the null hypothesis r \eqn{\le} r0. Note that a one sided test 
+#' (H1: r > r0) is performed.
 #' @param conf.level confidence level of the interval.
 #' 
 #' @return 
@@ -35,16 +35,16 @@
 #' \item{$lbound}{the lower bound of the confidence interval.}
 #' \item{$ubound}{the upper bound of the confidence interval.}
 #'   
-#' @details In this ICC-function three bugs are corrected that were found in the function 
-#' \link[irr]{icc} of the irr package (version 0.84): \cr
-#' Due to the fist bug the p-values of ICC(A,1) and ICC(A,k) are computed wrongly: 
+#' @details By this ICC-function three bugs are corrected that were found in the function 
+#' \link[irr]{icc} of the irr package (version 0.84.1): \cr
+#' Due to the first bug the p-values of ICC(A,1) and ICC(A,k) are computed wrongly: 
 #' McGraw & Wong (1996) use the variable "v" both for the computation of the CIs and for the 
 #' computation of the p-values. But "v" takes different values in these calculations. In the 
-#' implematation of icc\{irr\} (version 0.84) this fact is missed. \cr
+#' implementation of icc\{irr\} (version 0.84.1) this fact is missed. \cr
 #' The second correction only affects the rare case of the residual mean square (of the twoway 
 #' model) being zero, i.e. the case that the variance in the data may be explained completely 
 #' by the two factors (Raters and Objects). In this case the F-value for determining all four
-#' twoway p-values is not correlctly computet by \link[irr]{icc}.\cr
+#' twoway p-values is not correctly computet by \link[irr]{icc}.\cr
 #' The third correction addresses the problems arising in the rare cases of (a) no part or (b) 
 #' nearly no part of variance may be explained by both factors.
 #' 

@@ -31,8 +31,10 @@ where k is the mean number of (pairwise) ratings per object and \eqn{mean \rho_S
 weighted, according to Taylor (1987), since the pairwise \eqn{\rho_S} are possibly based on a 
 different number of ratings, what must be reflected in weights.\cr
 Thus, an imputation of missing values or (row- or cloumn-wise) omissions of data are obsolete. In 
-case of complete datasets, it yields the same results as usual implementations of Kendall's W. A 
-correction for tied ranks is not implemented.\cr
+case of complete datasets, it yields the same results as usual implementations of Kendall's W, 
+except for tied ranks. In case of tied ranks, the (pairwise) correction of \eqn{\rho_S} is used, 
+which (already with complete datasets) results in slightly different values than the tie correction 
+explicitly specified for W.\cr
 More details are given in Brueckl (2011).
 }
 \examples{

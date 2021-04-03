@@ -10,11 +10,16 @@
 #' @param rho0 numeric value; correlation in population (\eqn{\rho}) according to the null 
 #' hypothesis (0 is default)
 #' @param conf numeric value; confidence level (95\% is default)
-#' @param Cs numeric value; denominator (10000 is default) of the effect-size-criterion to stop 
-#' iteration of the correction for the raters' biases; the enumerator denotes a small effect 
 #' (\eqn{\eta}-squared = 1\%)
 #' @param detail logical; if TRUE, returns additional information (sums of squares, degrees of 
 #' freedom, the means per object, data corrected for the raters' biases)
+#' @param oneG logical; if TRUE, the ipsation (correction for the raters' effects) is done the 
+#' simple way, using the difference of each raters mean to the one grand mean (\eqn{G}) of all 
+#' values to estimate the raters' biases. If FALSE the weighted sub-means (\eqn{G_j} of those
+#' objects that an individual rater \eqn{j} rated are used instead (see Equation 4.30 in 
+#' Brueckl, 2011).
+#' @param Cs numeric value; denominator (10000 is default) of the effect-size-criterion to stop 
+#' iteration of the correction for the raters' biases; the enumerator denotes a small effect 
 #' @return
 #'    \item{ICCs}{data frame containing the intraclass correlation coefficients, the corresponding 
 #'    p-values, and confidence intervals}
@@ -34,11 +39,20 @@
 #' data are obsolete. Working on complete datasets, it yields the same results as the common 
 #' functions, e.g. \link[irrNA]{icc_corr}.\cr
 #' The method of Ebel (1951) is used to calculate the oneway ICCs. The solution for the twoway 
-#' ICCs is derived from the oneway solution (cp. Brueckl, 2011, p. 96 ff.): The raters' 
-#' individual effects (biases) are determined, reducing this problem again to the oneway problem 
-#' (cp. Greer & Dunlap, 1997). If the ratings are unbalanced, which happens most of the time if 
-#' not all raters rated all objects, the raters' biases cannot be determined exactly -- but as 
-#' approximately as desired. This approximation needs an iteration, thus a stop criterion (\code{Cs}): 
+#' ICCs is derived from the oneway solution (cp. Brueckl, 2011, p. 96 ff.): The raters' individual 
+#' effects (biases) are estimated, reducing this problem again to the oneway problem (cp. Greer & 
+#' Dunlap, 1997).\cr
+#' This estimation can be done using the difference of a certain (\eqn{j}) raters' mean to the 
+#' grand mean (\eqn{G}) or to the sub-mean (\eqn{G_j}) representing only those objects 
+#' that were rated by this rater. The first method is fail-safe. The second method is thought to 
+#' provide the more precise estimates (of the raters' biases), the more the mean of the true values 
+#' of the objects that each rater rated differ from the grand mean, e.g. if there are raters that 
+#' only rate objects with low true values (and therefore also other raters that only rate objects 
+#' with high true values).\cr
+#' If the second method is chosen and if the ratings are unbalanced, which happens most of the time 
+#' if not all raters rated all objects, the raters' biases cannot be determined exactly -- but as 
+#' approximately as desired. This approximation needs an iteration, thus a stop criterion 
+#' (\code{Cs}): 
 #' The iteration is stopped, when the difference in the raters' effect size (\eqn{\eta}-squared) 
 #' between subsequent iterations would be equal to or smaller than the \code{Cs}th part of a small 
 #' effect (i.e. \eqn{\eta}-squared = 1\%).\cr
@@ -122,7 +136,7 @@
 #' # twoway ICCs, assuming that the data were acquired under 
 #' # case 2 or case 3:
 #' iccNA(Ebel51, detail=TRUE)
-"iccNA" <- function (ratings, rho0 = 0, conf = 0.95, Cs = 10000, detail=FALSE){
+"iccNA" <- function (ratings, rho0 = 0, conf = 0.95, detail=FALSE , oneG=TRUE, Cs = 10000){
   if (1 <= rho0 || rho0 < 0){
     write ("Argument error: rho0 must be a value of the interval [0,1)!", stderr())
     stop()
@@ -201,7 +215,7 @@
   df_bO <- n-1
   MS_bO <- SS_bO / df_bO
 
-  SS_iO <- (sum(colSums(X^2, na.rm = TRUE)) - sum(ki*(olO^2)))
+  SS_iO <- sum(colSums(X^2, na.rm = TRUE)) - sum(ki*(olO^2))
   df_iO <- n*(olk-1)
   MS_iO <- SS_iO / df_iO
   
@@ -247,13 +261,17 @@
   olGj <- vector()
 
   for(i in seq(k)){
-    d <- 1/sum(!is.na(X[i]))# Flo schrieb hier: 1/colSums(!is.na(X[i]))
+    f <- 1/sum(!is.na(X[i]))# Flo schrieb hier: 1/colSums(!is.na(X[i]))
     e <- sum(X_rowMeans[Result[[i]]])
-    olGj[i] <- d * e
+    olGj[i] <- f * e
     olGj <- as.vector(olGj)
   }
-  
-  olD <- olGj - olR
+
+  # determines, which grand mean(s) is/are to be used in the ipsation
+  if (oneG == TRUE){
+    olD <- olG - olR}
+  else{
+    olD <- olGj - olR}
   
   Y <- vector()
   for(i in seq(k)){
@@ -266,7 +284,7 @@
   olOy <- rowMeans(Y, na.rm = TRUE)
   olOy <- as.matrix(olOy)#t(t(olOy))
   
-  SS_bR_diff <- sum(nj*(olD^2))
+  SS_bR_diff <- sum(nj*olD^2)
 
   eta2_diff <- SS_bR_diff / SS_tot
 
@@ -274,8 +292,9 @@
   # between subsequent ipsations would be irrelevant, i.e. until the effect of this 
   # correction is less than 1/Cs of a "small" effect (eta2=0.01, cp. Cohen, 1988)
   icount <- 0
-  while (eta2_diff > 0.01/Cs){
-  
+  Gbqy <- 0
+#  while ((eta2_diff > 0.01/Cs) && (sum(nj*(olR^2-Gbqy^2)) >= 0)){
+  while (eta2_diff > 0.01/Cs){  
     Y_teil <- Y[complete.cases(Y), ]
     Y <- as.data.frame(Y)
     Y_rowMeans <- rowMeans(Y, na.rm = TRUE)
@@ -288,15 +307,19 @@
     
     Gbqy <- vector()
     for(i in seq(k)){    
-      d <- 1/sum(!is.na(Y[i]))# Flo schrieb hier: 1/colSums(!is.na(Y[i]))
+      f <- 1/sum(!is.na(Y[i]))# Flo schrieb hier: 1/colSums(!is.na(Y[i]))
       e <- sum(Y_rowMeans[Result[[i]]])
-      Gbqy[i] <- d * e
+      Gbqy[i] <- f * e
       Gbqy <- as.vector(Gbqy)
     }
   
     Bqy <- colMeans(Y, na.rm = TRUE)
-    olD <- Gbqy - Bqy[seq(k)]
-  
+    # determines, which grand mean(s) is/are to be used in the ipsation
+    if (oneG == TRUE){
+      olD <- olG - Bqy[seq(k)]}
+    else{
+      olD <- Gbqy - Bqy[seq(k)]}
+
     Z <- vector()
     for(i in seq(k)){
       Z[i] <- olD[i] + Y[i]
@@ -306,22 +329,22 @@
     
     olOzj <- rowMeans(Z, na.rm = TRUE)
     olOzj <- as.matrix(olOzj)#t(t(olOzj))
-    SS_bR_diff <- sum(nj*(olD^2))
-  
+    SS_bR_diff <- sum(nj*olD^2)
+
     eta2_diff <- SS_bR_diff / SS_tot
     
-    if (eta2_diff > 0.01/Cs){
+    if (eta2_diff > 0.01/Cs) {
       olGj <- Gbqy
       olOy <- olOzj
       Y <- Z
     }
 
   icount <- icount+1
-  
-}
-  
+  }
+
   # calculation of the consistency ICCs
   SS_bOy <- sum(ki*(olOy^2 - olG^2))
+#  SS_bOy <- sum(ki*(olOy-olG)^2)
   df_bOy <- n-1
   MS_bOy <- SS_bOy / df_bOy
   # for reasons of computational precision SS_bOy and thus MS_bOy may wrongly equal to 
@@ -329,13 +352,13 @@
   if (MS_bOy < 0) {
     MS_bOy = 0
   } 
-  SS_res <- (sum(colSums(Y^2, na.rm = TRUE)) - sum(ki*(olOy^2)))
+  SS_res <- sum(colSums(Y^2, na.rm = TRUE)) - sum(ki*(olOy^2))
   df_res <- (n-1)*(olk-1)
   MS_res <- SS_res / df_res
 
   ICC31 <- (MS_bOy - MS_res) / (MS_bOy + (k_0-1)*MS_res)
   ICC3k <- (MS_bOy - MS_res) / MS_bOy
-  
+
   # p-values of the consistency ICCs
   F31 <- (MS_bOy / MS_res) * (1-rho0) / (1 + (k_0-1)*rho0)
   F3k <- (MS_bOy / MS_res) * (1-rho0)
@@ -357,7 +380,11 @@
 
   
   # calculation of the absolute agreement ICCs
-  SS_bR <- sum(nj*(olR^2 - olGj^2))
+  # determines, which great mean(s) is/are to be used in the ipsation
+  if (oneG == TRUE){
+    SS_bR <- sum(nj*(olR^2 - olG^2))}
+  else{
+    SS_bR <- sum(nj*(olR^2 - olGj^2))}
 
   df_bR <- k-1
   MS_bR <- SS_bR / df_bR
@@ -505,7 +532,7 @@
   
   data_ips <- Y[,1:k]
   n_ips <- icount
-  
+
   if (detail == FALSE) {
     answ <- list(ICCs = ICC, n_iter = n_ips-1, amk = olk, k_0 = k_0)
   }
