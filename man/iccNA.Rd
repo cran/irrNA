@@ -12,8 +12,7 @@ iccNA(ratings, rho0 = 0, conf = 0.95, detail = FALSE, oneG = TRUE, Cs = 10000)
 \item{rho0}{numeric value; correlation in population (\eqn{\rho}) according to the null 
 hypothesis (0 is default)}
 
-\item{conf}{numeric value; confidence level (95\% is default)
-(\eqn{\eta}-squared = 1\%)}
+\item{conf}{numeric value; confidence level (95\% is default)}
 
 \item{detail}{logical; if TRUE, returns additional information (sums of squares, degrees of 
 freedom, the means per object, data corrected for the raters' biases)}
@@ -21,11 +20,12 @@ freedom, the means per object, data corrected for the raters' biases)}
 \item{oneG}{logical; if TRUE, the ipsation (correction for the raters' effects) is done the 
 simple way, using the difference of each raters mean to the one grand mean (\eqn{G}) of all 
 values to estimate the raters' biases. If FALSE the weighted sub-means (\eqn{G_j} of those
-objects that an individual rater \eqn{j} rated are used instead (see Equation 4.30 in 
-Brueckl, 2011).}
+objects that an individual rater \eqn{j} rated are used instead (cp. Brueckl, 2011, 
+Equation 4.30).}
 
 \item{Cs}{numeric value; denominator (10000 is default) of the effect-size-criterion to stop 
-iteration of the correction for the raters' biases; the enumerator denotes a small effect}
+iteration of the correction for the raters' biases; the enumerator denotes a small effect 
+(\eqn{\eta}-squared = 1\%)}
 }
 \value{
 \item{ICCs}{data frame containing the intraclass correlation coefficients, the corresponding 
@@ -58,7 +58,7 @@ The method of Ebel (1951) is used to calculate the oneway ICCs. The solution for
 ICCs is derived from the oneway solution (cp. Brueckl, 2011, p. 96 ff.): The raters' individual 
 effects (biases) are estimated, reducing this problem again to the oneway problem (cp. Greer & 
 Dunlap, 1997).\cr
-This estimation can be done using the difference of a certain (\eqn{j}) raters' mean to the 
+This estimation can be done using the difference of a certain (\eqn{j}) rater's mean to the 
 grand mean (\eqn{G}) or to the sub-mean (\eqn{G_j}) representing only those objects 
 that were rated by this rater. The first method is fail-safe. The second method is thought to 
 provide the more precise estimates (of the raters' biases), the more the mean of the true values 

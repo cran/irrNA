@@ -1,8 +1,10 @@
-96e1a140e8194d7ac8fc5a281e790c6e *DESCRIPTION
+a75669052c120438d820b4b1978e0fe5 *DESCRIPTION
 f599064493fddae000c0ef5c0b6c7fa7 *NAMESPACE
-5f17e331a363cb728e5b6149f1e6f92f *R/iccNA.R
+501c5ef40ab488aa8bb7261aac32c037 *NEWS.md
+0377f6908a45fd24e57f7a8b13339731 *R/iccNA.R
 22e6abb883f74d34f736f3a5b3550f1c *R/icc_corr.R
 a330c3baf759b7268b3a6fa63138aad1 *R/kendallNA.R
+81f02877637a3f6b3d550d825a070bc1 *README.md
 fc54c7eacfe9f85c010bb60d3baf587b *data/Consist.rda
 b8af2ae871dc4c546392e88af5c64a71 *data/ConsistNA.rda
 960f820d8be2d446367ac2f01a019893 *data/Ebel51.rda
@@ -17,6 +19,6 @@ a548fe6aea8d72c4043849d018fd190d *data/IndepW.rda
 a57178481db59d4396a55df60775fcd3 *man/Indep.Rd
 679e00593cfa3a5cbbc99ef31443fdfc *man/IndepNA.Rd
 82c4497ac4f33fbca8ce212f062942d5 *man/IndepW.Rd
-86cc8bbd185553f7da8c19acb1f637b4 *man/iccNA.Rd
+c753ec83f6ee98c1a2f301ec7c203306 *man/iccNA.Rd
 31de6466e423e3a1f2f6fca8bc78a5dd *man/icc_corr.Rd
 642272b7c350e969164af61ba6233cf5 *man/kendallNA.Rd
