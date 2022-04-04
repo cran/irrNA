@@ -41,9 +41,9 @@
 #' ConsistNA
 #' # Common W-algorithms fail, since each row as well as each 
 #' # column of ConsistNA exhibits unfilled cells and these missing 
-#' # data are omitted column-wise or row-wise:
-#' library(irr)
-#' # try here: kendall(ConsistNA)
+#' # data are omitted column-wise or row-wise (please install and 
+#' # load the irr package):
+#' #kendall(ConsistNA)
 #' # But the generalization of Kendall's W implemeted in irrNA 
 #' # is able to assess the perfect concordance, assuming that 
 #' # the data were at least ordinally scaled and not tied, e.g. 
@@ -57,7 +57,7 @@
 #' # the raters (just as well as between the objects):
 #' IndepNA
 #' # Common W-algorithms fail:
-#' # try here: kendall(IndepNA)
+#' #kendall(IndepNA)
 #' # kendallNA includes all (rater-pairwise) available data in 
 #' # its calculation (e.g. only Objects 1--4 when Rater1 and 
 #' # Rater2 are correlated):
@@ -68,9 +68,9 @@
 #' # IndepW exhibits missing values and a mean Spearman's rho,
 #' # that equals zero:
 #' IndepW
-#' # Again, common W-algorithms fail:
-#' # try here: kendall(IndepW)
-#' # kendallNA includes all (rater-pairwise) available 
+#' # Again, common W-algorithms fail,
+#' #kendall(IndepW)
+#' # while kendallNA includes all (rater-pairwise) available 
 #' # data:
 #' kendallNA(IndepW)
 "kendallNA" <- function(X){

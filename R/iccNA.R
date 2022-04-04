@@ -10,12 +10,12 @@
 #' @param rho0 numeric value; correlation in population (\eqn{\rho}) according to the null 
 #' hypothesis (0 is default)
 #' @param conf numeric value; confidence level (95\% is default)
-#' @param detail logical; if TRUE, returns additional information (sums of squares, degrees of 
+#' @param detail logical; if TRUE (FALSE is default), returns additional information (sums of squares, degrees of 
 #' freedom, the means per object, data corrected for the raters' biases)
-#' @param oneG logical; if TRUE, the ipsation (correction for the raters' effects) is done the 
+#' @param oneG logical; if TRUE (default), the ipsation (correction for the raters' effects) is done the 
 #' simple way, using the difference of each raters mean to the one grand mean (\eqn{G}) of all 
-#' values to estimate the raters' biases. If FALSE the weighted sub-means (\eqn{G_j} of those
-#' objects that an individual rater \eqn{j} rated are used instead (cp. Brueckl, 2011, 
+#' values to estimate the raters' biases. If FALSE the weighted sub-means (\eqn{G_j})
+#' of those objects that an individual rater \eqn{j} rated are used instead (cp. Brueckl, 2011, 
 #' Equation 4.30).
 #' @param Cs numeric value; denominator (10000 is default) of the effect-size-criterion to stop 
 #' iteration of the correction for the raters' biases; the enumerator denotes a small effect 
@@ -102,9 +102,9 @@
 #' ConsistNA
 #' # Common ICC-algorithms fail, since each row as well as each 
 #' # column of ConsistNA exhibits unfilled cells and these missing 
-#' # data are omitted column-wise or row-wise:
-#' library(irr)
-#' icc(ConsistNA, r0=0.3)
+#' # data are omitted column-wise or row-wise (please install and  
+#' # load the irr package):
+#' #icc(ConsistNA, r0=0.3)
 #' # Ebel's (1951) method for computing ICC(1) and ICC(k) that is 
 #' # implemented in iccNA can cope with such data without an 
 #' # omission or an imputation of missing values, but still can 
@@ -121,8 +121,8 @@
 #' # IndepNA exhibits missing values and zero variance between 
 #' # the raters just as well as between the objects:
 #' IndepNA
-#' # Again, common ICC-algorithms fail:
-#' icc(IndepNA)
+#' # Again, common ICC-algorithms fail (cp. irr package):
+#' #icc(IndepNA)
 #' # But iccNA is able to include all available data in its 
 #' # calculation and thereby to show the perfect independence of 
 #' # the ratings:
@@ -155,25 +155,27 @@
     X <- as.data.frame(X)
   }
   
-  # output the names of columns/rows without score
+  # output the names of columns/rows without any score
+  col_with_score = colSums(!is.na(X)) > 0
   for(x in seq(ncol(X))){
-    if (((colSums(!is.na(X)) > 0)[x])==FALSE){
-      nom <- names((colSums(!is.na(X)) > 0)[x])
-      write (c("Warning: Rater \'",nom,"\' provides no rating!"), stderr(), sep="",ncolumns=3)
+    if (col_with_score[x]==FALSE){
+      nom <- names(col_with_score[x])
+      write (c("Warning: Rater \'",nom,"\' provided not a single rating!"), stderr(), sep="",ncolumns=3)
       write (c("  -> Rater \'",nom,"\' will be excluded from ICC calculation."), stderr(), sep="",ncolumns=3)
     }
   }
+  row_with_score = rowSums(!is.na(X)) > 0
   for(x in seq(nrow(X))){
-    if (((rowSums(!is.na(X)) > 0)[x])==FALSE){
-      nom <- names((rowSums(!is.na(X)) > 0)[x])
-      write (c("Warning: Object \'",nom,"\' receives no rating!"), stderr(), sep="",ncolumns=3)
+    if (row_with_score[x]==FALSE){
+      nom <- rownames(X[x,])
+      write (c("Warning: Object \'",nom,"\' was not rated at all!"), stderr(), sep="",ncolumns=3)
       write (c("  -> Object \'",nom,"\' will be excluded from ICC calculation."), stderr(), sep="",ncolumns=3)
     }
   }
   # delete columns and rows without any score (raters that did not rate and objects that were not 
   # rated)
-  X <- X[,(colSums(!is.na(X)) > 0)]
-  X <- X[(rowSums(!is.na(X)) > 0),]
+  X <- X[,col_with_score]
+  X <- X[row_with_score,]
   
   # output the names of columns without variance
   for(x in seq(ncol(X))){

@@ -14,13 +14,13 @@ hypothesis (0 is default)}
 
 \item{conf}{numeric value; confidence level (95\% is default)}
 
-\item{detail}{logical; if TRUE, returns additional information (sums of squares, degrees of 
+\item{detail}{logical; if TRUE (FALSE is default), returns additional information (sums of squares, degrees of 
 freedom, the means per object, data corrected for the raters' biases)}
 
-\item{oneG}{logical; if TRUE, the ipsation (correction for the raters' effects) is done the 
+\item{oneG}{logical; if TRUE (default), the ipsation (correction for the raters' effects) is done the 
 simple way, using the difference of each raters mean to the one grand mean (\eqn{G}) of all 
-values to estimate the raters' biases. If FALSE the weighted sub-means (\eqn{G_j} of those
-objects that an individual rater \eqn{j} rated are used instead (cp. Brueckl, 2011, 
+values to estimate the raters' biases. If FALSE the weighted sub-means (\eqn{G_j})
+of those objects that an individual rater \eqn{j} rated are used instead (cp. Brueckl, 2011, 
 Equation 4.30).}
 
 \item{Cs}{numeric value; denominator (10000 is default) of the effect-size-criterion to stop 
@@ -104,9 +104,9 @@ data(ConsistNA)
 ConsistNA
 # Common ICC-algorithms fail, since each row as well as each 
 # column of ConsistNA exhibits unfilled cells and these missing 
-# data are omitted column-wise or row-wise:
-library(irr)
-icc(ConsistNA, r0=0.3)
+# data are omitted column-wise or row-wise (please install and  
+# load the irr package):
+#icc(ConsistNA, r0=0.3)
 # Ebel's (1951) method for computing ICC(1) and ICC(k) that is 
 # implemented in iccNA can cope with such data without an 
 # omission or an imputation of missing values, but still can 
@@ -123,8 +123,8 @@ data(IndepNA)
 # IndepNA exhibits missing values and zero variance between 
 # the raters just as well as between the objects:
 IndepNA
-# Again, common ICC-algorithms fail:
-icc(IndepNA)
+# Again, common ICC-algorithms fail (cp. irr package):
+#icc(IndepNA)
 # But iccNA is able to include all available data in its 
 # calculation and thereby to show the perfect independence of 
 # the ratings:

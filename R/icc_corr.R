@@ -50,8 +50,8 @@
 #' 
 #' @references McGraw, K.O., & Wong, S.P. (1996). Forming inferences about some intraclass 
 #' correlation coefficients. Psychological Methods, 1, 30--46.
-#' @references Shrout, P.E., & Fleiss, J.L. (1979), Intraclass correlation: uses in assessing 
-#' rater reliability. Psychological Bulletin, 86, 420--428.
+#' @references Shrout, P.E., & Fleiss, J.L. (1979), Intraclass correlation: 
+#' uses in assessing rater reliability. Psychological Bulletin, 86, 420--428.
 #'
 #' @author Matthias Gamer, Markus Brueckl
 #' @seealso \code{\link[irr]{icc}}, \code{\link[irrNA]{iccNA}}
@@ -64,9 +64,9 @@
 #' EbelFILL
 #' # If twoway agreement ICCs are computed (e.g. the single 
 #' # measure) with icc{irr}, the 2nd df of F and thus the 
-#' # p-value is erroneous:
-#' library(irr)
-#' icc(EbelFILL, model="twoway", type="agreement")
+#' # p-value is erroneous (please install and load the irr 
+#' # package):
+#' #icc(EbelFILL, model="twoway", type="agreement")
 #' # icc_corr calculates correctly: 
 #' icc_corr(EbelFILL, model="twoway", type="agreement")
 #' # 
@@ -77,8 +77,7 @@
 #' Consist
 #' # If twoway ICCs are computed with icc{irr}, the F-value is smaller
 #' # than zero (!) and thus the p-value is enourmously erroneous:
-#' library(irr)
-#' icc(Consist, model="twoway", type="consistency", unit="average")
+#' #icc(Consist, model="twoway", type="consistency", unit="average")
 #' # icc_corr calculates correctly: 
 #' icc_corr(Consist, model="twoway", type="consistency", unit="average")
 #' #
@@ -90,11 +89,11 @@
 #' # Errors occur, if twoway agreement ICCs are computed with icc{irr}:
 #' # ICC(A,k) just as well as its CI-bounds are (falsely) positive 
 #' # and greater than 1...
-#' icc(Indep, model="twoway", type="agreement", unit="average")
+#' #icc(Indep, model="twoway", type="agreement", unit="average")
 #' # ...but must be -Inf, just as icc_corr shows:
 #' icc_corr(Indep, model="twoway", type="agreement", unit="average")
 #' # ICC(A,1): 2nd df of F and thus the p-value are NaN
-#' icc(Indep, model="twoway", type="agreement")
+#' #icc(Indep, model="twoway", type="agreement")
 #' # icc_corr calculates correlctly:
 #' icc_corr(Indep, model="twoway", type="agreement")
 "icc_corr"<-function (ratings, model = c("oneway", "twoway"), type = c("consistency", 
